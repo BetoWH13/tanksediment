@@ -2,6 +2,9 @@
 *.wpress
 tanksediment-com-20260219-200502-wbvxd3yjtoj0/
 
+# Build artifacts
+extracted_posts.json
+
 # Python
 __pycache__/
 *.pyc

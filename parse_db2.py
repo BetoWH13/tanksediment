@@ -86,8 +86,17 @@ print("\nAll post_type + post_status combinations:")
 for (t, s), c in sorted(types.items()):
     print(f"  {t:30s} {s:15s} {c}")
 
+# Pages deleted from the site — exclude from build
+DELETED_SLUGS = {
+    "affiliate-disclaimer", "anti-spam-policy", "copyright-notice",
+    "dmca-compliance", "earnings-disclaimer", "ftc-compliance", "privacy-policy"
+}
+
 # Filter published pages and posts
-published = [p for p in posts if p["post_status"] == "publish" and p["post_type"] in ("post", "page")]
+published = [p for p in posts
+             if p["post_status"] == "publish"
+             and p["post_type"] in ("post", "page")
+             and p["post_name"] not in DELETED_SLUGS]
 print(f"\nPublished pages/posts: {len(published)}")
 for p in published:
     print(f"  [{p['post_type']:5s}] ID={p['ID']:4s} slug={p['post_name'][:50]:50s} title={p['post_title'][:60]}")

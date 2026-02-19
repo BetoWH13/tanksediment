@@ -16,9 +16,7 @@ SITE_NAME = "Tank Sediment"
 # Pages to show in nav (skip blog index slug — we add it manually; skip homepage slug)
 SKIP_FROM_NAV = {"blog", "tank-sediment"}
 # Legal/footer pages — show in footer only
-FOOTER_PAGES = {"affiliate-disclaimer", "earnings-disclaimer", "privacy-policy",
-                "terms-and-conditions", "anti-spam-policy", "copyright-notice",
-                "dmca-compliance", "ftc-compliance"}
+FOOTER_PAGES = {"terms-and-conditions"}
 
 blog_posts = sorted([p for p in posts if p["post_type"] == "post"],
                     key=lambda p: p.get("post_date") or "", reverse=True)

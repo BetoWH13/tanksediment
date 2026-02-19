@@ -7,9 +7,23 @@ with open("extracted_posts.json", "r", encoding="utf-8") as f:
     posts = json.load(f)
 
 OUT_DIR = "static_site"
+# Preserve files that are manually maintained
+PRESERVE = ["404.html"]
+preserved = {}
+for fname in PRESERVE:
+    fpath = os.path.join(OUT_DIR, fname)
+    if os.path.exists(fpath):
+        with open(fpath, "r", encoding="utf-8") as f:
+            preserved[fname] = f.read()
+
 if os.path.exists(OUT_DIR):
     shutil.rmtree(OUT_DIR)
 os.makedirs(OUT_DIR)
+
+# Restore preserved files
+for fname, content in preserved.items():
+    with open(os.path.join(OUT_DIR, fname), "w", encoding="utf-8") as f:
+        f.write(content)
 
 SITE_NAME = "Tank Sediment"
 

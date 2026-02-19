@@ -10,6 +10,8 @@ OUT_DIR = "static_site"
 # Preserve files that are manually maintained
 PRESERVE = [
     "404.html",
+    "robots.txt",
+    "sitemap.xml",
     "affiliate-disclosure/index.html",
     "privacy-policy/index.html",
     "disclaimer/index.html",

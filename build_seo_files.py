@@ -31,6 +31,7 @@ all_urls.append(("blog/", "0.9", "weekly"))
 # Manually created pillar/SEO pages (high priority)
 EXTRA_SLUGS = [
     "sediment-buildup-in-water-heater",
+    "flush-water-heater-sediment",
 ]
 for slug in EXTRA_SLUGS:
     all_urls.append((f"{slug}/", "0.9", "weekly"))

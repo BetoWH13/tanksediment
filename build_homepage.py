@@ -59,29 +59,42 @@ CATEGORIES = [
     },
 ]
 
-# ── Featured articles (top 4 most useful) ──────────────────────────────────
+# ── Featured articles ──────────────────────────────────────────────────────
+# Each entry is either a slug string (looked up from WP posts)
+# or a dict with {slug, title, excerpt} for manually created pillar pages.
 FEATURED_SLUGS = [
+    {'slug': 'sediment-buildup-in-water-heater',
+     'title': 'Sediment Buildup in Water Heater: Complete Guide',
+     'excerpt': 'Everything you need to know — causes, warning signs, dangers, and step-by-step removal. The definitive guide.'},
+    {'slug': 'flush-water-heater-sediment',
+     'title': 'Flush Water Heater Sediment: Full Guide',
+     'excerpt': 'When to flush, how often, what equipment you need, and a step-by-step process to clear sediment from any tank.'},
     'how-to-clean-sediment',
     'how-to-flush-your-water-heater',
     '5-signs-your-water-heater-has-sediment-buildup',
-    'what-causes-sediment-buildup-in-water-heaters',
     'is-sediment-buildup-dangerous',
     'hard-water-vs-soft-water',
+    'what-causes-sediment-buildup-in-water-heaters',
 ]
 
 post_by_slug = {p['post_name']: p for p in blog_posts}
 
 # Build featured cards HTML
 featured_html = ''
-for slug in FEATURED_SLUGS:
-    p = post_by_slug.get(slug)
-    if not p:
-        continue
-    excerpt = clean_excerpt(p.get('post_content', ''))
+for item in FEATURED_SLUGS:
+    if isinstance(item, dict):
+        slug, title, excerpt = item['slug'], item['title'], item['excerpt']
+    else:
+        p = post_by_slug.get(item)
+        if not p:
+            continue
+        slug = p['post_name']
+        title = p['post_title']
+        excerpt = clean_excerpt(p.get('post_content', ''))
     featured_html += f'''      <div class="feat-card">
-        <h3><a href="/{p['post_name']}/">{p['post_title']}</a></h3>
+        <h3><a href="/{slug}/">{title}</a></h3>
         <p>{excerpt}</p>
-        <a href="/{p['post_name']}/" class="read-more">Read guide &rarr;</a>
+        <a href="/{slug}/" class="read-more">Read guide &rarr;</a>
       </div>\n'''
 
 # Build category sections HTML

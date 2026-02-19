@@ -8,7 +8,12 @@ with open("extracted_posts.json", "r", encoding="utf-8") as f:
 
 OUT_DIR = "static_site"
 # Preserve files that are manually maintained
-PRESERVE = ["404.html"]
+PRESERVE = [
+    "404.html",
+    "affiliate-disclosure/index.html",
+    "privacy-policy/index.html",
+    "disclaimer/index.html",
+]
 preserved = {}
 for fname in PRESERVE:
     fpath = os.path.join(OUT_DIR, fname)

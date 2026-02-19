@@ -1,0 +1,10 @@
+# Exclude large WP backup files
+*.wpress
+tanksediment-com-20260219-200502-wbvxd3yjtoj0/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/

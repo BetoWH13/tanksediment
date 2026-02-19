@@ -123,8 +123,23 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .blog-list h2 {{ margin: 0 0 0.3rem; font-size: 1.2rem; }}
     .blog-list .excerpt {{ color: #555; font-size: 0.93rem; margin-top: 0.3rem; }}
 
-    footer {{ background: #f5f5f5; border-top: 1px solid #ddd; text-align: center; padding: 1.5rem; font-size: 0.82rem; color: #777; margin-top: 3rem; line-height: 2; }}
-    footer a {{ color: #666; }}
+    footer {{ background: #111e26; color: #aaa; text-align: center; padding: 1.5rem; font-size: 0.82rem; margin-top: 3rem; line-height: 2; }}
+    footer a {{ color: #8ab; }}
+    footer a:hover {{ color: #fff; }}
+
+    @media (max-width: 900px) {{
+      .container {{ padding: 2rem 1.2rem; }}
+    }}
+    @media (max-width: 560px) {{
+      h1 {{ font-size: 1.5rem; }}
+      h2 {{ font-size: 1.2rem; }}
+      header {{ padding: 0.75rem 1rem; }}
+      nav {{ gap: 0.7rem; }}
+      nav a {{ font-size: 0.82rem; }}
+      .container {{ padding: 1.5rem 1rem; }}
+      table {{ font-size: 0.85rem; }}
+      th, td {{ padding: 0.4rem 0.5rem; }}
+    }}
   </style>
 </head>
 <body>
@@ -136,8 +151,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     {body}
   </div>
   <footer>
-    &copy; {site_name}<br>
-    {footer_links}
+    &copy; {site_name} &mdash;
+    <a href="/affiliate-disclosure/">Affiliate Disclosure</a> &middot;
+    <a href="/privacy-policy/">Privacy Policy</a> &middot;
+    <a href="/disclaimer/">Disclaimer</a> &middot;
+    <a href="/terms-and-conditions/">Terms &amp; Conditions</a> &middot;
+    <a href="/contact-us/">Contact Us</a>
   </footer>
 </body>
 </html>"""

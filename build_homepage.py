@@ -65,6 +65,8 @@ FEATURED_SLUGS = [
     'how-to-flush-your-water-heater',
     '5-signs-your-water-heater-has-sediment-buildup',
     'what-causes-sediment-buildup-in-water-heaters',
+    'is-sediment-buildup-dangerous',
+    'hard-water-vs-soft-water',
 ]
 
 post_by_slug = {p['post_name']: p for p in blog_posts}
@@ -138,7 +140,7 @@ html = f'''<!DOCTYPE html>
     /* Featured */
     .featured{{max-width:960px;margin:0 auto;padding:1rem 1.5rem 2.5rem}}
     .featured h2{{font-size:1.5rem;color:#1a3a4a;margin-bottom:1.2rem}}
-    .feat-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}}
+    .feat-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}}
     .feat-card{{border:1px solid #e0eaf2;border-radius:6px;padding:1.3rem;background:#f7fafd}}
     .feat-card h3{{font-size:1rem;color:#1a3a4a;margin-bottom:.4rem;line-height:1.4}}
     .feat-card h3 a{{color:inherit}}
@@ -150,7 +152,7 @@ html = f'''<!DOCTYPE html>
     .categories{{background:#f7fafd;padding:2.5rem 1.5rem}}
     .categories-inner{{max-width:960px;margin:0 auto}}
     .categories h2{{font-size:1.5rem;color:#1a3a4a;margin-bottom:1.5rem}}
-    .cat-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem}}
+    .cat-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}}
     .cat-section h3{{font-size:1.05rem;color:#1a3a4a;font-weight:bold;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:2px solid #1a6fa8}}
     .cat-list{{list-style:none;padding:0}}
     .cat-list li{{padding:.35rem 0;border-bottom:1px solid #e8e8e8}}
@@ -161,7 +163,22 @@ html = f'''<!DOCTYPE html>
     footer{{background:#111e26;color:#aaa;text-align:center;padding:1.5rem;font-size:.82rem;line-height:2;margin-top:0}}
     footer a{{color:#8ab}}
     footer a:hover{{color:#fff}}
-    @media(max-width:600px){{.hero h1{{font-size:1.7rem}}}}
+    @media(max-width:900px){{
+      .feat-grid{{grid-template-columns:repeat(2,1fr)}}
+      .cat-grid{{grid-template-columns:repeat(2,1fr)}}
+    }}
+    @media(max-width:560px){{
+      .hero h1{{font-size:1.6rem}}
+      .hero p{{font-size:.95rem}}
+      .cta-phone{{font-size:1.1rem;padding:.65rem 1.4rem}}
+      .feat-grid{{grid-template-columns:1fr}}
+      .cat-grid{{grid-template-columns:1fr}}
+      header{{padding:.75rem 1rem}}
+      nav a{{margin-left:.7rem;font-size:.85rem}}
+      .intro{{padding:1.5rem 1rem .5rem}}
+      .featured{{padding:.5rem 1rem 1.5rem}}
+      .categories{{padding:1.5rem 1rem}}
+    }}
   </style>
 </head>
 <body>

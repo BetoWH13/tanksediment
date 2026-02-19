@@ -125,6 +125,8 @@ html = f'''<!DOCTYPE html>
     .site-title a{{color:#fff;font-size:1.4rem;font-weight:bold}}
     nav a{{color:#cde;font-size:.9rem;margin-left:1.2rem}}
     nav a:hover{{color:#fff}}
+    .phone-cta{{color:#fff;font-weight:bold;font-size:.9rem;background:rgba(255,255,255,.12);padding:.3rem .85rem;border-radius:3px;white-space:nowrap;margin-left:1.2rem}}
+    .phone-cta:hover{{background:rgba(255,255,255,.25);text-decoration:none}}
 
     /* Hero */
     .hero{{background:#1a3a4a;color:#fff;padding:4rem 2rem;text-align:center}}
@@ -188,6 +190,7 @@ html = f'''<!DOCTYPE html>
       <a href="/">Home</a>
       <a href="/blog/">Blog</a>
       <a href="/contact-us/">Contact Us</a>
+      <a href="tel:8557554920" class="phone-cta">&#128222; 855-755-4920</a>
     </nav>
   </header>
 

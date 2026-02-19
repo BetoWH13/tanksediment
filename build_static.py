@@ -130,6 +130,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .blog-list h2 {{ margin: 0 0 0.3rem; font-size: 1.2rem; }}
     .blog-list .excerpt {{ color: #555; font-size: 0.93rem; margin-top: 0.3rem; }}
 
+    .phone-cta {{ color: #fff; font-weight: bold; font-size: .9rem; background: rgba(255,255,255,.12); padding: .3rem .85rem; border-radius: 3px; white-space: nowrap; }}
+    .phone-cta:hover {{ background: rgba(255,255,255,.25); text-decoration: none; }}
     footer {{ background: #111e26; color: #aaa; text-align: center; padding: 1.5rem; font-size: 0.82rem; margin-top: 3rem; line-height: 2; }}
     footer a {{ color: #8ab; }}
     footer a:hover {{ color: #fff; }}
@@ -152,7 +154,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
   <header>
     <div class="site-title"><a href="/">{site_name}</a></div>
-    <nav>{nav}</nav>
+    <nav>{nav}<a href="tel:8557554920" class="phone-cta">&#128222; 855-755-4920</a></nav>
   </header>
   <div class="container">
     {body}

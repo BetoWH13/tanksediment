@@ -62,6 +62,8 @@ def clean_content(content, strip_title=None):
     # Remove nested empty lists (list-style-type: none with no real content)
     content = re.sub(r'<ul>\s*<li style="list-style-type: none;">\s*<ul>', '<ul>', content)
     content = re.sub(r'</ul>\s*</li>\s*</ul>', '</ul>', content)
+    # Replace any rogue phone numbers with the canonical one
+    content = re.sub(r'607[\s.\-]?610[\s.\-]?3115', '855-755-4920', content)
     # Demote all H1s inside content to H2 (page title is the only H1)
     content = re.sub(r'<h1([^>]*)>', r'<h2\1>', content, flags=re.IGNORECASE)
     content = re.sub(r'</h1>', r'</h2>', content, flags=re.IGNORECASE)

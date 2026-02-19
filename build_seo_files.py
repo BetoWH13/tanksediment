@@ -32,6 +32,7 @@ all_urls.append(("blog/", "0.9", "weekly"))
 EXTRA_SLUGS = [
     "sediment-buildup-in-water-heater",
     "flush-water-heater-sediment",
+    "water-heater-sediment-removal",
 ]
 for slug in EXTRA_SLUGS:
     all_urls.append((f"{slug}/", "0.9", "weekly"))

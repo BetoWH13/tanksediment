@@ -26,15 +26,24 @@ nav_pages = [p for p in posts
              and p["post_name"] not in SKIP_FROM_NAV
              and p["post_name"] not in FOOTER_PAGES]
 
-def clean_content(content):
+def clean_content(content, strip_title=None):
     if not content:
         return ""
     content = re.sub(r'<!-- /?wp:[^>]*-->', '', content)
-    content = re.sub(r'<p>\s*(&nbsp;)?\s*</p>', '', content)
+    # Remove &nbsp; used as spacers
+    content = re.sub(r'(<p>|^)\s*&nbsp;\s*(</p>|$)', '', content, flags=re.MULTILINE)
+    content = re.sub(r'&nbsp;', ' ', content)
+    content = re.sub(r'<p>\s*</p>', '', content)
     content = re.sub(r'https?://tanksediment\.com/', '/', content)
     content = re.sub(r'style="[^"]*background[^"]*"', '', content, flags=re.IGNORECASE)
     content = re.sub(r'<figure[^>]*>.*?</figure>', '', content, flags=re.DOTALL)
     content = re.sub(r'<img[^>]*/?>',  '', content, flags=re.DOTALL)
+    # Remove nested empty lists (list-style-type: none with no real content)
+    content = re.sub(r'<ul>\s*<li style="list-style-type: none;">\s*<ul>', '<ul>', content)
+    content = re.sub(r'</ul>\s*</li>\s*</ul>', '</ul>', content)
+    # Demote all H1s inside content to H2 (page title is the only H1)
+    content = re.sub(r'<h1([^>]*)>', r'<h2\1>', content, flags=re.IGNORECASE)
+    content = re.sub(r'</h1>', r'</h2>', content, flags=re.IGNORECASE)
     content = re.sub(r'\n{3,}', '\n\n', content)
     return content.strip()
 
@@ -143,18 +152,7 @@ for post in posts:
     content = clean_content(post["post_content"])
 
     if slug == "tank-sediment":
-        # This is the WP front page — render as homepage
-        items_html = ""
-        for bp in blog_posts:
-            excerpt = auto_excerpt(bp)
-            items_html += f"""<li>
-  <h2><a href="/{bp['post_name']}/">{bp['post_title']}</a></h2>
-  <div class="excerpt">{excerpt}</div>
-</li>"""
-        body = f"{content}\n<h2>Latest Articles</h2>\n<ul class='blog-list'>{items_html}</ul>"
-        html = render_page("Home", body, "home")
-        write_page("index.html", html)
-        written += 1
+        pass  # homepage is built separately by build_homepage.py
 
     elif post["post_type"] == "page" and slug == "blog":
         items_html = ""
@@ -170,6 +168,7 @@ for post in posts:
         written += 1
 
     else:
+        content = clean_content(post["post_content"], strip_title=post["post_title"])
         date_str = (post.get("post_date") or "")[:10]
         meta = f'<div class="post-meta">Published: {date_str}</div>' if post["post_type"] == "post" and date_str else ""
         body = f"<h1>{post['post_title']}</h1>{meta}<div class='post-content'>{content}</div>"

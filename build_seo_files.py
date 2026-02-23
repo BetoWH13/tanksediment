@@ -35,6 +35,7 @@ EXTRA_SLUGS = [
     "water-heater-sediment-removal",
     "hard-water-water-heater-damage",
     "water-heater-anode-rod-sediment",
+    "calculator",
 ]
 for slug in EXTRA_SLUGS:
     all_urls.append((f"{slug}/", "0.9", "weekly"))

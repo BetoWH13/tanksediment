@@ -225,6 +225,7 @@ html = f'''<!DOCTYPE html>
   <div class="intro">
     <p>Sediment buildup is one of the most common &mdash; and most overlooked &mdash; causes of water heater inefficiency. Minerals like calcium and magnesium settle at the bottom of your tank over time, reducing heating efficiency, raising energy bills, and shortening the lifespan of your unit.</p>
     <p>Whether you need a step-by-step flushing guide, want to understand hard water, or are comparing tank vs. tankless heaters, you'll find everything you need below.</p>
+    <p style="background:#f0f8ff;padding:1rem 1.5rem;border-left:4px solid #1a6fa8;border-radius:0 6px 6px 0;margin-top:1.5rem"><strong>💧 New:</strong> Try our free <a href="/calculator/" style="font-weight:bold;color:#1a6fa8">Sediment Buildup Calculator</a> to estimate how much sediment has accumulated in your water heater and when you should flush it.</p>
   </div>
 
   <div class="featured">

@@ -15,6 +15,7 @@ PRESERVE = [
     "affiliate-disclosure/index.html",
     "privacy-policy/index.html",
     "disclaimer/index.html",
+    "calculator/index.html",
 ]
 preserved = {}
 for fname in PRESERVE:

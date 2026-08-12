@@ -1,251 +1,72 @@
-import json, re
+"""Rebuild the Tank Sediment homepage without reintroducing legacy claims.
 
-with open('extracted_posts.json', 'r', encoding='utf-8') as f:
-    posts = json.load(f)
+The public homepage is intentionally informational. Do not add claims that the site
+is a plumbing company, physical sediment estimates, universal maintenance intervals,
+or unsupported lifespan/efficiency promises here.
+"""
+from pathlib import Path
 
-blog_posts = sorted([p for p in posts if p['post_type'] == 'post'],
-                    key=lambda p: p.get('post_date') or '', reverse=True)
+FEATURED = [
+    ("sediment-buildup-in-water-heater", "Sediment Buildup in a Water Heater", "What sediment is, why it can accumulate, common signs, and questions to consider before maintenance or service."),
+    ("flush-water-heater-sediment", "Water Heater Flushing", "Understand what flushing is intended to do, when owners commonly consider it, and why heater condition matters before work begins."),
+    ("water-heater-sediment-removal", "Sediment Removal Options", "Compare maintenance and professional-service paths without assuming every heater should be handled the same way."),
+    ("hard-water-water-heater-damage", "Hard Water and Water Heaters", "How mineral-rich water relates to scale formation and why local water conditions can change maintenance needs."),
+    ("water-heater-anode-rod-sediment", "Anode Rods and Sediment", "Learn the different roles of corrosion protection, mineral scale, rust, and tank maintenance."),
+    ("5-signs-your-water-heater-has-sediment-buildup", "Signs Worth Investigating", "Noises, changes in hot-water performance, and visible discharge can have more than one cause. Start with context rather than a diagnosis."),
+]
 
-def clean_excerpt(content, length=130):
-    text = re.sub(r'<[^>]+>', '', content or '')
-    text = re.sub(r'&nbsp;', ' ', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return (text[:length] + '...') if len(text) > length else text
-
-# ── Category definitions (slug lists) ──────────────────────────────────────
 CATEGORIES = [
-    {
-        'title': 'Sediment Basics',
-        'slugs': [
-            'what-causes-sediment-buildup-in-water-heaters',
-            'the-science-behind-sediment-buildup',
-            'is-sediment-buildup-dangerous',
-            '5-signs-your-water-heater-has-sediment-buildup',
-            'how-sediment-impacts-your-water-heater',
-            'keeping-your-water-heater-clear',
-        ]
-    },
-    {
-        'title': 'Cleaning &amp; Flushing',
-        'slugs': [
-            'how-to-clean-sediment',
-            'how-to-flush-your-water-heater',
-            'how-to-flush-a-tankless-water-heater',
-            'how-often-should-you-flush-your-water-heater',
-            'annual-maintenance-checklist-for-your-water-heater',
-        ]
-    },
-    {
-        'title': 'Hard Water',
-        'slugs': [
-            'hard-water-vs-soft-water',
-            'how-hard-water-impacts-your-energy-bills',
-            'the-link-between-hard-water-and-plumbing-repairs',
-            'how-water-softeners-can-prevent-sediment-buildup',
-            'how-to-test-your-water-for-hardness-at-home',
-            'common-myths-about-water-heaters-and-hard-water',
-        ]
-    },
-    {
-        'title': 'Water Heater Types &amp; Technology',
-        'slugs': [
-            'tank-vs-tankless-water-heaters',
-            'electric-vs-gas-water-heaters',
-            'solar-water-heaters-hard-water',
-            'hard-water-and-your-water-heater',
-            'innovative-technologies-for-combating-hard-water',
-            'comparing-the-longevity-of-different-water-heater-materials',
-        ]
-    },
+    ("Sediment Basics", [
+        ("what-causes-sediment-buildup-in-water-heaters", "What Causes Sediment Buildup?"),
+        ("the-science-behind-sediment-buildup", "The Science Behind Sediment"),
+        ("is-sediment-buildup-dangerous", "Is Sediment Buildup Dangerous?"),
+        ("how-sediment-impacts-your-water-heater", "How Sediment Can Affect a Heater"),
+    ]),
+    ("Maintenance", [
+        ("how-to-clean-sediment", "Cleaning Sediment"),
+        ("how-to-flush-your-water-heater", "Water Heater Flushing"),
+        ("how-often-should-you-flush-your-water-heater", "How Often to Consider Flushing"),
+        ("annual-maintenance-checklist-for-your-water-heater", "Maintenance Checklist"),
+    ]),
+    ("Hard Water", [
+        ("hard-water-vs-soft-water", "Hard Water vs. Soft Water"),
+        ("hard-water-and-your-water-heater", "Hard Water and Your Heater"),
+        ("how-to-test-your-water-for-hardness-at-home", "Water Hardness Testing"),
+        ("common-myths-about-water-heaters-and-hard-water", "Common Hard-Water Myths"),
+    ]),
+    ("Heater Types", [
+        ("tank-vs-tankless-water-heaters", "Tank vs. Tankless"),
+        ("electric-vs-gas-water-heaters", "Electric vs. Gas"),
+        ("solar-water-heaters-hard-water", "Solar Water Heaters"),
+        ("how-to-flush-a-tankless-water-heater", "Tankless Maintenance Context"),
+    ]),
 ]
 
-# ── Featured articles ──────────────────────────────────────────────────────
-# Each entry is either a slug string (looked up from WP posts)
-# or a dict with {slug, title, excerpt} for manually created pillar pages.
-FEATURED_SLUGS = [
-    {'slug': 'sediment-buildup-in-water-heater',
-     'title': 'Sediment Buildup in Water Heater: Complete Guide',
-     'excerpt': 'Everything you need to know — causes, warning signs, dangers, and step-by-step removal. The definitive guide.'},
-    {'slug': 'flush-water-heater-sediment',
-     'title': 'Flush Water Heater Sediment: Full Guide',
-     'excerpt': 'When to flush, how often, what equipment you need, and a step-by-step process to clear sediment from any tank.'},
-    {'slug': 'water-heater-sediment-removal',
-     'title': 'Water Heater Sediment Removal: Methods &amp; Costs',
-     'excerpt': 'DIY vs. professional removal methods, real cost breakdowns, and when to replace instead of clean.'},
-    {'slug': 'hard-water-water-heater-damage',
-     'title': 'Hard Water Water Heater Damage: Signs &amp; Prevention',
-     'excerpt': 'Hard water silently cuts your water heater lifespan in half. Learn the signs, real costs, and how to stop the damage.'},
-    {'slug': 'water-heater-anode-rod-sediment',
-     'title': 'Water Heater Anode Rod &amp; Sediment: The Connection',
-     'excerpt': 'The anode rod directly affects sediment and rust buildup. Learn when to inspect it, replace it, and flush at the same time.'},
-    'how-to-clean-sediment',
-    'how-to-flush-your-water-heater',
-    '5-signs-your-water-heater-has-sediment-buildup',
-    'is-sediment-buildup-dangerous',
-    'hard-water-vs-soft-water',
-    'what-causes-sediment-buildup-in-water-heaters',
-]
-
-post_by_slug = {p['post_name']: p for p in blog_posts}
-
-# Build featured cards HTML
-featured_html = ''
-for item in FEATURED_SLUGS:
-    if isinstance(item, dict):
-        slug, title, excerpt = item['slug'], item['title'], item['excerpt']
-    else:
-        p = post_by_slug.get(item)
-        if not p:
-            continue
-        slug = p['post_name']
-        title = p['post_title']
-        excerpt = clean_excerpt(p.get('post_content', ''))
-    featured_html += f'''      <div class="feat-card">
-        <h3><a href="/{slug}/">{title}</a></h3>
-        <p>{excerpt}</p>
-        <a href="/{slug}/" class="read-more">Read guide &rarr;</a>
-      </div>\n'''
-
-# Build category sections HTML
-categories_html = ''
-for cat in CATEGORIES:
-    items = ''
-    for slug in cat['slugs']:
-        p = post_by_slug.get(slug)
-        if not p:
-            continue
-        items += f'        <li><a href="/{p["post_name"]}/">{p["post_title"]}</a></li>\n'
-    if items:
-        categories_html += f'''    <div class="cat-section">
-      <h3>{cat["title"]}</h3>
-      <ul class="cat-list">
-{items}      </ul>
-    </div>\n'''
-
-FOOTER = '''  <footer>
-    &copy; Tank Sediment &mdash;
-    <a href="/affiliate-disclosure/">Affiliate Disclosure</a> &middot;
-    <a href="/privacy-policy/">Privacy Policy</a> &middot;
-    <a href="/disclaimer/">Disclaimer</a> &middot;
-    <a href="/terms-and-conditions/">Terms &amp; Conditions</a> &middot;
-    <a href="/contact-us/">Contact Us</a>
-  </footer>'''
+featured_html = "\n".join(
+    f'<div class="feat-card"><h3><a href="/{slug}/">{title}</a></h3><p>{excerpt}</p><a class="read-more" href="/{slug}/">Read guide →</a></div>'
+    for slug, title, excerpt in FEATURED
+)
+category_html = "\n".join(
+    '<div class="cat-section"><h3>'+title+'</h3><ul class="cat-list">'+
+    ''.join(f'<li><a href="/{slug}/">{label}</a></li>' for slug, label in links)+
+    '</ul></div>' for title, links in CATEGORIES
+)
 
 html = f'''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tank Sediment | Water Heater Maintenance &amp; Sediment Removal</title>
-  <meta name="description" content="Expert guides on water heater sediment removal, flushing, and maintenance. Call us at 855-755-4920.">
-  <style>
-    *,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
-    body{{font-family:Georgia,serif;color:#222;background:#fff;line-height:1.75}}
-    a{{color:#1a6fa8;text-decoration:none}}
-    a:hover{{text-decoration:underline}}
-    header{{background:#1a3a4a;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}}
-    .site-title a{{color:#fff;font-size:1.4rem;font-weight:bold}}
-    nav a{{color:#cde;font-size:.9rem;margin-left:1.2rem}}
-    nav a:hover{{color:#fff}}
-    .phone-cta{{color:#fff;font-weight:bold;font-size:.9rem;background:rgba(255,255,255,.12);padding:.3rem .85rem;border-radius:3px;white-space:nowrap;margin-left:1.2rem}}
-    .phone-cta:hover{{background:rgba(255,255,255,.25);text-decoration:none}}
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tank Sediment | Water Heater Sediment Guides</title>
+<meta name="description" content="Practical information about water heater sediment, hard water, maintenance questions, and when professional help may make sense.">
+<style>
+*,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}body{{font-family:Georgia,serif;color:#222;background:#fff;line-height:1.75}}a{{color:#1a6fa8;text-decoration:none}}a:hover{{text-decoration:underline}}header{{background:#1a3a4a;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}}.site-title a{{color:#fff;font-size:1.4rem;font-weight:bold}}nav a{{color:#cde;font-size:.9rem;margin-left:1.2rem}}.phone-cta{{color:#fff;font-weight:bold;background:rgba(255,255,255,.12);padding:.35rem .85rem;border-radius:3px;white-space:nowrap}}.hero{{background:#1a3a4a;color:#fff;padding:4rem 2rem;text-align:center}}.hero h1{{font-size:2.2rem;line-height:1.3;max-width:760px;margin:0 auto 1rem}}.hero p{{color:#cde;max-width:760px;margin:0 auto 1.5rem}}.cta-phone{{display:inline-block;background:#fff;color:#1a3a4a;font-weight:bold;padding:.75rem 1.4rem;border-radius:4px}}.intro,.featured,.service-note{{max-width:960px;margin:0 auto;padding:2rem 1.5rem}}.intro,.service-note{{max-width:820px}}.intro p,.service-note p{{margin-bottom:1rem;color:#444}}.notice{{background:#f0f8ff;padding:1rem 1.25rem;border-left:4px solid #1a6fa8;border-radius:0 6px 6px 0}}.featured h2,.categories h2,.service-note h2{{color:#1a3a4a;margin-bottom:1.2rem}}.feat-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}}.feat-card{{border:1px solid #e0eaf2;border-radius:6px;padding:1.2rem;background:#f7fafd}}.feat-card h3{{font-size:1rem;line-height:1.4;margin-bottom:.45rem}}.feat-card p{{font-size:.9rem;color:#666}}.read-more{{font-size:.88rem;font-weight:bold}}.categories{{background:#f7fafd;padding:2.5rem 1.5rem}}.categories-inner{{max-width:960px;margin:auto}}.cat-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}}.cat-section h3{{font-size:1.05rem;color:#1a3a4a;border-bottom:2px solid #1a6fa8;padding-bottom:.4rem;margin-bottom:.6rem}}.cat-list{{list-style:none}}.cat-list li{{padding:.35rem 0;border-bottom:1px solid #e8e8e8}}.cat-list a{{color:#333;font-size:.94rem}}footer{{background:#111e26;color:#aaa;text-align:center;padding:1.5rem;font-size:.82rem;line-height:2}}footer a{{color:#8ab}}@media(max-width:900px){{.feat-grid{{grid-template-columns:repeat(2,1fr)}}.cat-grid{{grid-template-columns:repeat(2,1fr)}}}}@media(max-width:560px){{header{{padding:.75rem 1rem}}nav a{{margin-left:.6rem;font-size:.82rem}}.hero{{padding:3rem 1rem}}.hero h1{{font-size:1.65rem}}.feat-grid,.cat-grid{{grid-template-columns:1fr}}}}
+</style></head><body>
+<header><div class="site-title"><a href="/">Tank Sediment</a></div><nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/contact-us/">Service Help</a><a href="tel:8557554920" class="phone-cta">855-755-4920</a></nav></header>
+<section class="hero"><h1>Understand Water Heater Sediment Before You Decide What to Do</h1><p>Plain-language guides about sediment buildup, hard water, maintenance questions, and signs that may be worth discussing with a qualified professional.</p><a href="tel:8557554920" class="cta-phone">Connect with a service provider</a></section>
+<section class="intro"><p>Minerals and other material can settle inside tank-style water heaters over time. How much accumulates, how quickly it happens, and whether it is affecting a particular heater depend on local water chemistry, heater design, usage, age, and maintenance history.</p><p>Tank Sediment is an informational site. We do not inspect your heater and we cannot determine its internal condition from a webpage.</p><p class="notice"><strong>Maintenance context tool:</strong> Use the <a href="/calculator/"><strong>Water Heater Maintenance Context Tool</strong></a> to organize what you know about heater age, last service, and water hardness. It does not estimate a physical amount of sediment inside the tank.</p></section>
+<section class="featured"><h2>Start Here</h2><div class="feat-grid">{featured_html}</div></section>
+<section class="categories"><div class="categories-inner"><h2>Browse by Topic</h2><div class="cat-grid">{category_html}</div></div></section>
+<section class="service-note"><h2>Need Service Help?</h2><p>If you want professional help, the phone number on this site may connect you with an independent third-party service provider or service network. Tank Sediment is not the plumbing company performing the work.</p><p>Before authorizing work, confirm the provider's identity, scope, pricing, licensing where applicable, and any warranty terms directly with that provider.</p></section>
+<footer>&copy; Tank Sediment — <a href="/affiliate-disclosure/">Affiliate Disclosure</a> · <a href="/privacy-policy/">Privacy Policy</a> · <a href="/disclaimer/">Disclaimer</a> · <a href="/terms-and-conditions/">Terms &amp; Conditions</a> · <a href="/contact-us/">Service Help</a></footer>
+</body></html>'''
 
-    /* Hero */
-    .hero{{background:#1a3a4a;color:#fff;padding:4rem 2rem;text-align:center}}
-    .hero h1{{font-size:2.2rem;color:#fff;margin-bottom:1rem;line-height:1.3;max-width:680px;margin-left:auto;margin-right:auto}}
-    .hero p{{color:#cde;font-size:1.05rem;margin-bottom:1.5rem}}
-    .cta-phone{{display:inline-block;background:#fff;color:#1a3a4a;font-weight:bold;font-size:1.3rem;padding:.75rem 2rem;border-radius:4px;letter-spacing:.02em}}
-    .cta-phone:hover{{background:#e8f0f7;text-decoration:none}}
-
-    /* Intro */
-    .intro{{max-width:820px;margin:0 auto;padding:2.5rem 1.5rem 1rem}}
-    .intro p{{font-size:1.05rem;color:#444;margin-bottom:1rem}}
-
-    /* Featured */
-    .featured{{max-width:960px;margin:0 auto;padding:1rem 1.5rem 2.5rem}}
-    .featured h2{{font-size:1.5rem;color:#1a3a4a;margin-bottom:1.2rem}}
-    .feat-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}}
-    .feat-card{{border:1px solid #e0eaf2;border-radius:6px;padding:1.3rem;background:#f7fafd}}
-    .feat-card h3{{font-size:1rem;color:#1a3a4a;margin-bottom:.4rem;line-height:1.4}}
-    .feat-card h3 a{{color:inherit}}
-    .feat-card h3 a:hover{{color:#1a6fa8;text-decoration:none}}
-    .feat-card p{{font-size:.88rem;color:#666;margin-bottom:.75rem}}
-    .read-more{{font-size:.88rem;color:#1a6fa8;font-weight:bold}}
-
-    /* Categories */
-    .categories{{background:#f7fafd;padding:2.5rem 1.5rem}}
-    .categories-inner{{max-width:960px;margin:0 auto}}
-    .categories h2{{font-size:1.5rem;color:#1a3a4a;margin-bottom:1.5rem}}
-    .cat-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}}
-    .cat-section h3{{font-size:1.05rem;color:#1a3a4a;font-weight:bold;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:2px solid #1a6fa8}}
-    .cat-list{{list-style:none;padding:0}}
-    .cat-list li{{padding:.35rem 0;border-bottom:1px solid #e8e8e8}}
-    .cat-list li:last-child{{border-bottom:none}}
-    .cat-list a{{color:#333;font-size:.95rem}}
-    .cat-list a:hover{{color:#1a6fa8}}
-
-    footer{{background:#111e26;color:#aaa;text-align:center;padding:1.5rem;font-size:.82rem;line-height:2;margin-top:0}}
-    footer a{{color:#8ab}}
-    footer a:hover{{color:#fff}}
-    @media(max-width:900px){{
-      .feat-grid{{grid-template-columns:repeat(2,1fr)}}
-      .cat-grid{{grid-template-columns:repeat(2,1fr)}}
-    }}
-    @media(max-width:560px){{
-      .hero h1{{font-size:1.6rem}}
-      .hero p{{font-size:.95rem}}
-      .cta-phone{{font-size:1.1rem;padding:.65rem 1.4rem}}
-      .feat-grid{{grid-template-columns:1fr}}
-      .cat-grid{{grid-template-columns:1fr}}
-      header{{padding:.75rem 1rem}}
-      nav a{{margin-left:.7rem;font-size:.85rem}}
-      .intro{{padding:1.5rem 1rem .5rem}}
-      .featured{{padding:.5rem 1rem 1.5rem}}
-      .categories{{padding:1.5rem 1rem}}
-    }}
-  </style>
-</head>
-<body>
-  <header>
-    <div class="site-title"><a href="/">Tank Sediment</a></div>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/blog/">Blog</a>
-      <a href="/contact-us/">Contact Us</a>
-      <a href="tel:8557554920" class="phone-cta">&#128222; 855-755-4920</a>
-    </nav>
-  </header>
-
-  <div class="hero">
-    <h1>Water Heater Sediment &mdash; Guides, Tips &amp; Fixes</h1>
-    <p>Expert advice on cleaning, flushing, and maintaining your water heater.<br>Have a question? Call us now:</p>
-    <a href="tel:8557554920" class="cta-phone">&#128222; 855-755-4920</a>
-  </div>
-
-  <div class="intro">
-    <p>Sediment buildup is one of the most common &mdash; and most overlooked &mdash; causes of water heater inefficiency. Minerals like calcium and magnesium settle at the bottom of your tank over time, reducing heating efficiency, raising energy bills, and shortening the lifespan of your unit.</p>
-    <p>Whether you need a step-by-step flushing guide, want to understand hard water, or are comparing tank vs. tankless heaters, you'll find everything you need below.</p>
-    <p style="background:#f0f8ff;padding:1rem 1.5rem;border-left:4px solid #1a6fa8;border-radius:0 6px 6px 0;margin-top:1.5rem"><strong>💧 New:</strong> Try our free <a href="/calculator/" style="font-weight:bold;color:#1a6fa8">Sediment Buildup Calculator</a> to estimate how much sediment has accumulated in your water heater and when you should flush it.</p>
-  </div>
-
-  <div class="featured">
-    <h2>Start Here &mdash; Most Popular Guides</h2>
-    <div class="feat-grid">
-{featured_html}    </div>
-  </div>
-
-  <div class="categories">
-    <div class="categories-inner">
-      <h2>Browse by Topic</h2>
-      <div class="cat-grid">
-{categories_html}      </div>
-    </div>
-  </div>
-
-{FOOTER}
-</body>
-</html>'''
-
-with open('static_site/index.html', 'w', encoding='utf-8') as f:
-    f.write(html)
-print('Done - homepage rebuilt')
+Path('static_site/index.html').write_text(html, encoding='utf-8')
+print('Done - safety-framed homepage rebuilt')

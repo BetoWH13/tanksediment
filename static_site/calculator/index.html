@@ -3,352 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Water Heater Sediment Calculator | Tank Sediment</title>
-  <meta name="description" content="Free water heater sediment buildup calculator. Estimate scale accumulation, efficiency loss, and when to flush based on your water hardness and maintenance history.">
+  <title>Water Heater Maintenance Context Tool | Tank Sediment</title>
+  <meta name="description" content="Organize water heater age, last service date, and water hardness context without pretending to measure sediment inside the tank.">
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Georgia,serif;color:#eaeaea;background:#1a1a2e;line-height:1.6}
-    a{color:#0f9b8e;text-decoration:none}
-    a:hover{text-decoration:underline}
-    header{background:#1a3a4a;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-    .site-title a{color:#fff;font-size:1.4rem;font-weight:bold}
-    nav a{color:#cde;font-size:.9rem;margin-left:1.2rem}
-    nav a:hover{color:#fff}
-    .phone-cta{color:#fff;font-weight:bold;font-size:.9rem;background:rgba(255,255,255,.12);padding:.3rem .85rem;border-radius:3px;white-space:nowrap;margin-left:1.2rem}
-    .phone-cta:hover{background:rgba(255,255,255,.25);text-decoration:none}
-    .container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
-    h1{font-size:2.2rem;color:#fff;margin-bottom:.5rem;line-height:1.2;text-align:center}
-    h2{font-size:1.5rem;color:#e94560;margin:2rem 0 1rem}
-    h3{font-size:1.15rem;color:#0f9b8e;margin:1.5rem 0 .5rem}
-    p{margin-bottom:1rem;color:#a0a0b0}
-    .subtitle{text-align:center;color:#a0a0b0;font-size:1.05rem;margin-bottom:2rem}
-    .disclaimer{background:#2c1810;border-left:4px solid #e94560;padding:1rem 1.5rem;margin:2rem 0;border-radius:0 6px 6px 0}
-    .disclaimer strong{color:#e94560;display:block;margin-bottom:.5rem}
-    .disclaimer p{color:#d0d0d0;font-size:.95rem;margin-bottom:.5rem}
-    .calc-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
-    .calc-card{background:#16213e;padding:1.8rem;border-radius:8px;border:1px solid #0f3460}
-    .calc-card h2{margin-top:0}
-    .form-group{margin-bottom:1.5rem}
-    .form-group label{display:block;color:#0f9b8e;font-weight:bold;margin-bottom:.5rem;font-size:.95rem}
-    .form-group input,.form-group select{width:100%;padding:.7rem;background:#0f3460;border:1px solid #1a3a4a;color:#fff;border-radius:4px;font-size:1rem;font-family:inherit}
-    .form-group input:focus,.form-group select:focus{outline:none;border-color:#0f9b8e}
-    .hardness-options{display:flex;flex-direction:column;gap:.6rem}
-    .hardness-option{background:#0f3460;padding:.8rem 1rem;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all .2s}
-    .hardness-option:hover{border-color:#0f9b8e}
-    .hardness-option.selected{border-color:#e94560;background:#1a2a4a}
-    .hardness-option input{display:none}
-    .hardness-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
-    .hardness-name{font-weight:bold;color:#fff;font-size:1rem}
-    .hardness-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-    .hardness-range{color:#a0a0b0;font-size:.85rem}
-    .hardness-desc{color:#8090a0;font-size:.82rem;margin-top:.3rem}
-    .btn{background:#e94560;color:#fff;padding:.8rem 1.8rem;border:none;border-radius:6px;font-size:1.05rem;font-weight:bold;cursor:pointer;transition:all .2s;font-family:inherit}
-    .btn:hover{background:#d03550;transform:translateY(-2px)}
-    .btn:active{transform:translateY(0)}
-    .btn-secondary{background:#0f9b8e}
-    .btn-secondary:hover{background:#0d8577}
-    .results{background:#16213e;padding:2rem;border-radius:8px;border:1px solid #0f3460}
-    .results.hidden{display:none}
-    .risk-badge{display:inline-block;padding:.4rem 1rem;border-radius:20px;font-weight:bold;font-size:.9rem;margin-bottom:1rem}
-    .risk-low{background:#2ecc71;color:#fff}
-    .risk-moderate{background:#f1c40f;color:#222}
-    .risk-high{background:#e67e22;color:#fff}
-    .risk-critical{background:#e74c3c;color:#fff}
-    .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;margin:1.5rem 0}
-    .stat-box{background:#0f3460;padding:1rem;border-radius:6px;border-left:4px solid #0f9b8e}
-    .stat-label{color:#a0a0b0;font-size:.85rem;margin-bottom:.3rem}
-    .stat-value{color:#fff;font-size:1.5rem;font-weight:bold}
-    .stat-unit{font-size:.9rem;color:#a0a0b0;margin-left:.3rem}
-    .progress-bar{background:#0f3460;height:30px;border-radius:6px;overflow:hidden;margin:1rem 0;position:relative}
-    .progress-fill{height:100%;transition:width .3s;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:.85rem}
-    .tips-section{background:#0f3460;padding:1.5rem;border-radius:8px;margin:2rem 0}
-    .tips-section h3{margin-top:0}
-    .tips-section ul{margin-left:1.5rem;color:#d0d0d0}
-    .tips-section li{margin-bottom:.5rem}
-    footer{background:#111e26;color:#aaa;text-align:center;padding:1.5rem;font-size:.82rem;line-height:2;margin-top:3rem}
-    footer a{color:#8ab}
-    footer a:hover{color:#fff}
-    @media(max-width:900px){.calc-wrapper{grid-template-columns:1fr}.stat-grid{grid-template-columns:1fr}}
-    @media(max-width:560px){h1{font-size:1.6rem}.container{padding:1.5rem 1rem}header{padding:.75rem 1rem}nav a{margin-left:.7rem;font-size:.82rem}}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,serif;color:#222;background:#fff;line-height:1.7}a{color:#1a6fa8;text-decoration:none}a:hover{text-decoration:underline}
+    header{background:#1a3a4a;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}.site-title a{color:#fff;font-size:1.4rem;font-weight:bold}nav a{color:#cde;font-size:.9rem;margin-left:1rem}.phone-cta{color:#fff;font-weight:bold;background:rgba(255,255,255,.12);padding:.35rem .85rem;border-radius:3px}
+    .container{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem}h1{color:#1a3a4a;font-size:2.1rem;line-height:1.25;margin-bottom:.6rem}h2{color:#1a3a4a;font-size:1.35rem;margin:1.8rem 0 .8rem}.lede{font-size:1.05rem;color:#555;margin-bottom:1.5rem}.notice{background:#f0f8ff;border-left:4px solid #1a6fa8;padding:1rem 1.25rem;margin:1.5rem 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}.card{border:1px solid #dce7ee;background:#f8fbfd;border-radius:7px;padding:1.25rem}.field{margin-bottom:1rem}.field label{display:block;font-weight:bold;margin-bottom:.35rem}.field input,.field select{width:100%;padding:.7rem;border:1px solid #b8c8d2;border-radius:4px;font:inherit}.btn{background:#1a3a4a;color:#fff;border:none;padding:.75rem 1.15rem;border-radius:4px;font:bold 1rem Georgia,serif;cursor:pointer}.btn:hover{background:#24546a}.result{display:none;margin-top:1.5rem;border:1px solid #dce7ee;border-radius:7px;padding:1.25rem;background:#fff}.result.show{display:block}.result ul{margin:.7rem 0 0 1.3rem}.result li{margin-bottom:.45rem}.small{font-size:.9rem;color:#666}.service{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #ddd}footer{background:#111e26;color:#aaa;text-align:center;padding:1.5rem;font-size:.82rem;line-height:2;margin-top:2rem}footer a{color:#8ab}@media(max-width:650px){.grid{grid-template-columns:1fr}header{padding:.75rem 1rem}nav a{margin-left:.5rem;font-size:.82rem}h1{font-size:1.6rem}}
   </style>
 </head>
 <body>
-  <header>
-    <div class="site-title"><a href="/">Tank Sediment</a></div>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/blog/">Blog</a>
-      <a href="/contact-us/">Contact Us</a>
-      <a href="tel:8557554920" class="phone-cta">&#128222; 855-755-4920</a>
-    </nav>
-  </header>
+<header><div class="site-title"><a href="/">Tank Sediment</a></div><nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/contact-us/">Service Help</a><a href="tel:8557554920" class="phone-cta">855-755-4920</a></nav></header>
+<main class="container">
+  <h1>Water Heater Maintenance Context Tool</h1>
+  <p class="lede">Use a few known facts to organize your maintenance context. This tool does <strong>not</strong> calculate how much sediment is inside your heater, predict efficiency loss, diagnose a problem, or tell you that service is required.</p>
+  <div class="notice"><strong>Why the change?</strong> Sediment inside a specific water heater cannot be reliably estimated from age and water-hardness inputs alone. Heater design, local chemistry, temperature, usage, prior maintenance, and tank condition all matter.</div>
 
-  <div class="container">
-    <h1>💧 Water Heater Sediment Calculator</h1>
-    <p class="subtitle">Estimate sediment buildup, efficiency loss, and when to flush your water heater</p>
+  <div class="grid">
+    <section class="card">
+      <h2>Your information</h2>
+      <div class="field"><label for="installDate">Approximate installation date</label><input type="date" id="installDate"></div>
+      <div class="field"><label for="lastService">Last known drain, flush, or professional service</label><input type="date" id="lastService"></div>
+      <div class="field"><label for="hardness">Known water-hardness context</label><select id="hardness"><option value="unknown">I don't know</option><option value="soft">Soft / lower mineral content</option><option value="moderate">Moderate</option><option value="hard">Hard / higher mineral content</option><option value="very-hard">Very hard / substantial mineral content</option></select></div>
+      <div class="field"><label for="symptoms">Anything unusual?</label><select id="symptoms"><option value="none">No obvious change</option><option value="noise">New popping, rumbling, or unusual noise</option><option value="performance">Noticeable hot-water performance change</option><option value="leak">Leak, discharge, or visible corrosion</option><option value="multiple">More than one of these</option></select></div>
+      <button class="btn" type="button" onclick="reviewContext()">Review context</button>
+    </section>
 
-    <div class="disclaimer">
-      <strong>⚠️ Important Disclaimer</strong>
-      <p>This calculator provides <strong>estimates for informational purposes only</strong>. We do not know the actual condition of your water heater, tank integrity, or specific water chemistry. Actual sediment buildup varies based on many factors including water quality, usage patterns, tank design, and maintenance history.</p>
-      <p>Always consult a licensed plumber for professional assessment and service. This tool does not replace professional inspection or maintenance.</p>
-    </div>
-
-    <div class="calc-wrapper">
-      <div class="calc-card">
-        <h2>📋 Enter Your Information</h2>
-        
-        <div class="form-group">
-          <label for="installDate">Installation Date</label>
-          <input type="date" id="installDate" required>
-        </div>
-
-        <div class="form-group">
-          <label for="lastFlush">Last Flush/Drain Date</label>
-          <input type="date" id="lastFlush" required>
-        </div>
-
-        <div class="form-group">
-          <label>Water Hardness Level</label>
-          <div class="hardness-options" id="hardnessOptions"></div>
-        </div>
-
-        <button class="btn" onclick="calculate()">🔍 Calculate Buildup</button>
-        <button class="btn btn-secondary" onclick="reset()" style="margin-left:1rem">🔄 Reset</button>
-      </div>
-
-      <div class="calc-card results hidden" id="results">
-        <h2>📊 Results</h2>
-        <div id="resultsContent"></div>
-      </div>
-    </div>
-
-    <div class="tips-section">
-      <h3>💡 How This Calculator Works</h3>
-      <ul>
-        <li><strong>Buildup Rate:</strong> Based on water hardness levels from US Dept of Energy and industry standards</li>
-        <li><strong>Efficiency Loss:</strong> Approximately 8% per mm of sediment accumulation (varies by heater type)</li>
-        <li><strong>Flush Intervals:</strong> Recommended maintenance schedules based on hardness level</li>
-        <li><strong>Risk Levels:</strong> Low (&lt;3mm), Moderate (3-6mm), High (6-10mm), Critical (&gt;10mm)</li>
-      </ul>
-    </div>
-
-    <div class="tips-section">
-      <h3>🔧 Next Steps Based on Your Results</h3>
-      <ul>
-        <li><strong>Low Risk:</strong> Continue regular maintenance schedule — <a href="/flush-water-heater-sediment/">learn how to flush</a></li>
-        <li><strong>Moderate Risk:</strong> Schedule a flush within 1-2 months — <a href="/water-heater-sediment-removal/">removal methods</a></li>
-        <li><strong>High Risk:</strong> Flush immediately or hire a professional — <a href="/sediment-buildup-in-water-heater/">full guide</a></li>
-        <li><strong>Critical Risk:</strong> Professional inspection recommended; consider replacement if tank is old</li>
-        <li><strong>Hard Water Areas:</strong> Consider installing a water softener — <a href="/hard-water-water-heater-damage/">hard water damage guide</a></li>
-      </ul>
-    </div>
+    <section class="card">
+      <h2>What this tool can actually tell you</h2>
+      <p>It can calculate elapsed time from dates you provide and flag factors that may justify checking the manufacturer's maintenance guidance or asking a qualified professional for an assessment.</p>
+      <p class="small">It deliberately avoids millimeter estimates, efficiency percentages, fixed risk scores, and universal flushing schedules.</p>
+    </section>
   </div>
 
-  <footer>
-    &copy; Tank Sediment &mdash;
-    <a href="/affiliate-disclosure/">Affiliate Disclosure</a> &middot;
-    <a href="/privacy-policy/">Privacy Policy</a> &middot;
-    <a href="/disclaimer/">Disclaimer</a> &middot;
-    <a href="/terms-and-conditions/">Terms &amp; Conditions</a> &middot;
-    <a href="/contact-us/">Contact Us</a>
-  </footer>
+  <section id="result" class="result" aria-live="polite"><h2>Your maintenance context</h2><div id="resultText"></div></section>
 
-  <script>
-    const HARDNESS_LEVELS = {
-      soft: {
-        name: "Soft",
-        range: "0–60 mg/L (0–3.5 gpg)",
-        rate: 0.5,
-        interval: 36,
-        desc: "Very little scaling. Low risk of buildup.",
-        color: "#2ecc71"
-      },
-      modSoft: {
-        name: "Moderately Soft",
-        range: "61–120 mg/L (3.5–7 gpg)",
-        rate: 1.0,
-        interval: 24,
-        desc: "Minor scaling over time. Routine maintenance advised.",
-        color: "#f1c40f"
-      },
-      hard: {
-        name: "Hard",
-        range: "121–180 mg/L (7–10.5 gpg)",
-        rate: 2.0,
-        interval: 12,
-        desc: "Noticeable scaling. Annual flushing strongly recommended.",
-        color: "#e67e22"
-      },
-      veryHard: {
-        name: "Very Hard",
-        range: "181–250 mg/L (10.5–14.5 gpg)",
-        rate: 3.5,
-        interval: 6,
-        desc: "Heavy scaling. Bi-annual flushing required.",
-        color: "#e74c3c"
-      },
-      extHard: {
-        name: "Extremely Hard",
-        range: "250+ mg/L (14.5+ gpg)",
-        rate: 5.0,
-        interval: 3,
-        desc: "Severe scaling. Consider a water softener immediately.",
-        color: "#8e44ad"
-      }
-    };
-
-    let selectedHardness = 'soft';
-
-    function initHardnessOptions() {
-      const container = document.getElementById('hardnessOptions');
-      Object.entries(HARDNESS_LEVELS).forEach(([key, level]) => {
-        const option = document.createElement('div');
-        option.className = 'hardness-option' + (key === 'soft' ? ' selected' : '');
-        option.onclick = () => selectHardness(key);
-        option.innerHTML = `
-          <div class="hardness-header">
-            <span class="hardness-name">${level.name}</span>
-            <span class="hardness-dot" style="background:${level.color}"></span>
-          </div>
-          <div class="hardness-range">${level.range}</div>
-          <div class="hardness-desc">${level.desc}</div>
-        `;
-        container.appendChild(option);
-      });
-    }
-
-    function selectHardness(key) {
-      selectedHardness = key;
-      document.querySelectorAll('.hardness-option').forEach(opt => {
-        opt.classList.remove('selected');
-      });
-      event.currentTarget.classList.add('selected');
-    }
-
-    function calculate() {
-      const installDate = document.getElementById('installDate').value;
-      const lastFlush = document.getElementById('lastFlush').value;
-
-      if (!installDate || !lastFlush) {
-        alert('Please fill in all date fields');
-        return;
-      }
-
-      const today = new Date();
-      const install = new Date(installDate);
-      const flush = new Date(lastFlush);
-
-      if (install > today || flush > today) {
-        alert('Dates cannot be in the future');
-        return;
-      }
-
-      if (flush < install) {
-        alert('Last flush date cannot be before installation date');
-        return;
-      }
-
-      const level = HARDNESS_LEVELS[selectedHardness];
-      const yearsSinceFlush = (today - flush) / (365.25 * 24 * 60 * 60 * 1000);
-      const yearsSinceInstall = (today - install) / (365.25 * 24 * 60 * 60 * 1000);
-
-      const buildupSinceFlush = level.rate * yearsSinceFlush;
-      const buildupTotal = level.rate * yearsSinceInstall;
-      const efficiencyLoss = Math.min(buildupSinceFlush * 8, 100);
-
-      const monthsSinceFlush = Math.floor((today - flush) / (30.44 * 24 * 60 * 60 * 1000));
-      const monthsUntilFlush = Math.max(level.interval - monthsSinceFlush, 0);
-
-      let risk, riskClass, riskColor;
-      if (buildupSinceFlush < 3) {
-        risk = 'Low';
-        riskClass = 'risk-low';
-        riskColor = '#2ecc71';
-      } else if (buildupSinceFlush < 6) {
-        risk = 'Moderate';
-        riskClass = 'risk-moderate';
-        riskColor = '#f1c40f';
-      } else if (buildupSinceFlush < 10) {
-        risk = 'High';
-        riskClass = 'risk-high';
-        riskColor = '#e67e22';
-      } else {
-        risk = 'Critical';
-        riskClass = 'risk-critical';
-        riskColor = '#e74c3c';
-      }
-
-      const progressPercent = Math.min((buildupSinceFlush / 15) * 100, 100);
-
-      const resultsHTML = `
-        <div class="risk-badge ${riskClass}">Risk Level: ${risk}</div>
-        
-        <div class="stat-grid">
-          <div class="stat-box">
-            <div class="stat-label">Sediment Since Last Flush</div>
-            <div class="stat-value">${buildupSinceFlush.toFixed(2)}<span class="stat-unit">mm</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Total Sediment (Lifetime)</div>
-            <div class="stat-value">${buildupTotal.toFixed(2)}<span class="stat-unit">mm</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Estimated Efficiency Loss</div>
-            <div class="stat-value">${efficiencyLoss.toFixed(1)}<span class="stat-unit">%</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Next Flush Due In</div>
-            <div class="stat-value">${monthsUntilFlush}<span class="stat-unit">${monthsUntilFlush === 0 ? 'OVERDUE!' : 'months'}</span></div>
-          </div>
-        </div>
-
-        <h3 style="margin-top:1.5rem">Sediment Buildup Progress</h3>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${progressPercent}%;background:${riskColor}">
-            ${buildupSinceFlush.toFixed(2)} / 15 mm
-          </div>
-        </div>
-
-        <h3>📌 Recommendations</h3>
-        <p style="color:#d0d0d0;margin-top:.5rem">
-          ${risk === 'Low' ? 'Your water heater is in good condition. Continue your current maintenance schedule.' : ''}
-          ${risk === 'Moderate' ? 'Moderate sediment buildup detected. Plan to flush your water heater within the next 1-2 months.' : ''}
-          ${risk === 'High' ? 'High sediment levels detected. Flush your water heater as soon as possible to prevent damage and efficiency loss.' : ''}
-          ${risk === 'Critical' ? 'Critical sediment buildup! Immediate action required. Consider professional service or replacement if the tank is over 8 years old.' : ''}
-        </p>
-        <p style="color:#a0a0b0;font-size:.9rem;margin-top:1rem">
-          Water hardness: <strong style="color:${level.color}">${level.name}</strong> (${level.range})<br>
-          Recommended flush interval: Every ${level.interval} months
-        </p>
-      `;
-
-      document.getElementById('resultsContent').innerHTML = resultsHTML;
-      document.getElementById('results').classList.remove('hidden');
-      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function reset() {
-      document.getElementById('installDate').value = '';
-      document.getElementById('lastFlush').value = '';
-      selectedHardness = 'soft';
-      document.querySelectorAll('.hardness-option').forEach((opt, idx) => {
-        opt.classList.toggle('selected', idx === 0);
-      });
-      document.getElementById('results').classList.add('hidden');
-    }
-
-    // Initialize on load
-    initHardnessOptions();
-
-    // Set default dates (example: installed 3 years ago, flushed 1 year ago)
-    const today = new Date();
-    const threeYearsAgo = new Date(today);
-    threeYearsAgo.setFullYear(today.getFullYear() - 3);
-    const oneYearAgo = new Date(today);
-    oneYearAgo.setFullYear(today.getFullYear() - 1);
-    
-    document.getElementById('installDate').value = threeYearsAgo.toISOString().split('T')[0];
-    document.getElementById('lastFlush').value = oneYearAgo.toISOString().split('T')[0];
-  </script>
+  <section class="service">
+    <h2>Before You Act</h2>
+    <p>Older or neglected water heaters can behave differently when disturbed. If you are unsure of the heater's condition, fuel type, shutoff procedure, drain-valve condition, or manufacturer instructions, consider professional assessment before attempting maintenance.</p>
+    <p>If you use the service number on this site, you may be connected with an independent third-party provider or service network. Tank Sediment is not the plumbing company performing the work.</p>
+    <p><a href="/sediment-buildup-in-water-heater/">Read the sediment overview</a> · <a href="/hard-water-and-your-water-heater/">Understand hard-water context</a> · <a href="/contact-us/">Service connection information</a></p>
+  </section>
+</main>
+<footer>&copy; Tank Sediment — <a href="/affiliate-disclosure/">Affiliate Disclosure</a> · <a href="/privacy-policy/">Privacy Policy</a> · <a href="/disclaimer/">Disclaimer</a> · <a href="/terms-and-conditions/">Terms &amp; Conditions</a></footer>
+<script>
+function monthsBetween(dateString){
+  if(!dateString) return null;
+  const d=new Date(dateString+'T00:00:00');
+  const now=new Date();
+  if(isNaN(d.getTime())||d>now) return null;
+  return Math.max(0,Math.floor((now-d)/(30.44*24*60*60*1000)));
+}
+function humanTime(months){
+  if(months===null) return 'not provided';
+  if(months<12) return months+' month'+(months===1?'':'s');
+  const years=Math.floor(months/12),rem=months%12;
+  return years+' year'+(years===1?'':'s')+(rem?' '+rem+' month'+(rem===1?'':'s'):'');
+}
+function reviewContext(){
+  const install=document.getElementById('installDate').value;
+  const service=document.getElementById('lastService').value;
+  const hardness=document.getElementById('hardness').value;
+  const symptoms=document.getElementById('symptoms').value;
+  const installMonths=monthsBetween(install);
+  const serviceMonths=monthsBetween(service);
+  if(install && installMonths===null){alert('Please use an installation date that is not in the future.');return;}
+  if(service && serviceMonths===null){alert('Please use a service date that is not in the future.');return;}
+  if(install && service && new Date(service)<new Date(install)){alert('The service date cannot be before the installation date.');return;}
+  let points=[];
+  points.push('<li><strong>Approximate heater age:</strong> '+humanTime(installMonths)+'.</li>');
+  points.push('<li><strong>Time since last known drain/flush/service:</strong> '+humanTime(serviceMonths)+'.</li>');
+  if(hardness==='unknown') points.push('<li><strong>Water hardness:</strong> unknown. A local utility report or simple hardness test can give you better context.</li>');
+  if(hardness==='soft') points.push('<li><strong>Water hardness:</strong> you report softer/lower-mineral water. That generally means less scale pressure than harder water, but it does not reveal the condition of this heater.</li>');
+  if(hardness==='moderate') points.push('<li><strong>Water hardness:</strong> you report moderate mineral content. Use this as context, not as a sediment measurement.</li>');
+  if(hardness==='hard'||hardness==='very-hard') points.push('<li><strong>Water hardness:</strong> you report hard or very hard water. Mineral scale may deserve more attention, but heater-specific condition still cannot be inferred from hardness alone.</li>');
+  if(symptoms==='none') points.push('<li><strong>Observed changes:</strong> none reported. Manufacturer guidance and maintenance history remain the better starting points.</li>');
+  if(symptoms==='noise') points.push('<li><strong>Observed change:</strong> new noise. Sediment can be one possible contributor, but noise is not a diagnosis.</li>');
+  if(symptoms==='performance') points.push('<li><strong>Observed change:</strong> hot-water performance has changed. Several causes are possible; consider assessment if the change is meaningful or persistent.</li>');
+  if(symptoms==='leak'||symptoms==='multiple') points.push('<li><strong>Observed condition:</strong> a leak, discharge, corrosion, or multiple symptoms deserves more caution than a routine maintenance reminder. Avoid relying on this tool to diagnose the cause.</li>');
+  document.getElementById('resultText').innerHTML='<ul>'+points.join('')+'</ul><p class="small">This summary is informational only and does not determine whether flushing, repair, or replacement is appropriate.</p>';
+  document.getElementById('result').classList.add('show');
+}
+</script>
 </body>
 </html>
